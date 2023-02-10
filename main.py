@@ -21,6 +21,7 @@ class myMap:
         self.lon = 55.865172
         self.type = 'map'
         self.toponym = 'Москва, Пестеля, 8г'
+        self.spn = get_ll_spn(self.toponym)[1]
 
 
 my_map = myMap()
@@ -56,6 +57,14 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.minus, 1, 0, 1, 1)
         self.minus.clicked.connect(self.minus_z)
 
+        self.left = QPushButton("<-", self)
+        self.grid_layout.addWidget(self.left, 2, 0, 1, 1)
+        self.left.clicked.connect(self.left_z)
+        self.right = QPushButton("->", self)
+        self.grid_layout.addWidget(self.right, 2, 14, 1, 1)
+        self.right.clicked.connect(self.right_z)
+
+
         # поле
         self.adress = QLineEdit()
         self.adress.setFont(font)
@@ -64,7 +73,7 @@ class MainWindow(QMainWindow):
         # поле для вывода изображения карты
         # кнопка Найти
         self.btn2 = QPushButton("Найти", self)
-        self.grid_layout.addWidget(self.btn2, 0, 13, 1, 2)  # Добавляем кнопку в сетку
+        self.grid_layout.addWidget(self.btn2, 0, 14, 1, 2)  # Добавляем кнопку в сетку
         self.btn2.clicked.connect(self.new_search)
         self.new_search()
 
@@ -79,16 +88,27 @@ class MainWindow(QMainWindow):
         self.change_map()
 
     def KeyPressEvent(self, event):
-        if event.key() == Qt.Key_PageUp:
+        if event.key() == Qt.Key_W:
             self.plus_z()
-        elif event.key() == Qt.Key_PageDown:
+        elif event.key() == Qt.Key_S:
             self.minus_z()
+        elif event.key() == Qt.Key_A:
+            self.left_z()
+        elif event.key() == Qt.Key_A:
+            self.right_z()
 
-    def new_search(self):
-        my_map.topnym = self.adress.text()
-        my_map.lon, my_map.lat = get_coords(my_map.topnym)
+    def left_z(self):
+        my_map.lon -= 1/my_map.lat
         self.change_map()
 
+    def right_z(self):
+        my_map.lon += 1/my_map.lat
+        self.change_map()
+
+    def new_search(self):
+        my_map.toponym = self.adress.text()
+        my_map.lon, my_map.lat = get_coords(my_map.toponym)
+        self.change_map()
 
     def change_map(self):
         params = {
