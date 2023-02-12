@@ -23,6 +23,7 @@ class myMap:
         self.toponym = 'Москва, Пестеля, 8г'
         self.spn = get_ll_spn(self.toponym)[1]
         self.count = 0
+        self.pt = True
 
 
 my_map = myMap()
@@ -65,16 +66,20 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.right, 2, 14, 1, 1)
         self.right.clicked.connect(self.right_z)
 
-        self.left = QPushButton("🠕", self)
-        self.grid_layout.addWidget(self.left, 3, 0, 1, 1)
-        self.left.clicked.connect(self.up_z)
-        self.right = QPushButton("🠗", self)
-        self.grid_layout.addWidget(self.right, 3, 14, 1, 1)
-        self.right.clicked.connect(self.down_z)
+        self.up = QPushButton("🠕", self)
+        self.grid_layout.addWidget(self.up, 3, 0, 1, 1)
+        self.up.clicked.connect(self.up_z)
+        self.down = QPushButton("🠗", self)
+        self.grid_layout.addWidget(self.down, 3, 14, 1, 1)
+        self.down.clicked.connect(self.down_z)
 
-        self.left = QPushButton("Изменить вид карты", self)
-        self.grid_layout.addWidget(self.left, 10, 0, 1, 1)
-        self.left.clicked.connect(self.change)
+        self.chang = QPushButton("Изменить вид карты", self)
+        self.grid_layout.addWidget(self.chang, 1, 3, 1, 1)
+        self.chang.clicked.connect(self.change)
+
+        self.delete = QPushButton("Сброс поискового результата", self)
+        self.grid_layout.addWidget(self.delete, 1, 4, 1, 1)
+        self.delete.clicked.connect(self.delete_search)
         # поле
         self.adress = QLineEdit()
         self.adress.setFont(font)
@@ -87,19 +92,23 @@ class MainWindow(QMainWindow):
         self.btn2.clicked.connect(self.new_search)
         self.new_search()
 
+    def delete_search(self):
+        my_map.pt = False
+        self.new_search()
+
+
     def change(self):
         my_map.count += 1
         if my_map.count == 1:
-            my_map.type = 'map'
-            self.change_map()
-        elif my_map.count == 2:
             my_map.type = 'sat'
             self.change_map()
-        elif my_map.count == 3:
+        elif my_map.count == 2:
             my_map.type = 'sat,skl'
             self.change_map()
+        elif my_map.count == 3:
+            my_map.type = 'map'
+            self.change_map()
             my_map.count = 0
-
 
     def up_z(self):
         my_map.lat += 1 / my_map.lon
@@ -119,15 +128,15 @@ class MainWindow(QMainWindow):
             my_map.z -= 1
         self.change_map()
 
-    def KeyPressEvent(self, event):
-        if event.key() == Qt.Key_W:
-            self.plus_z()
-        elif event.key() == Qt.Key_S:
-            self.minus_z()
-        elif event.key() == Qt.Key_A:
-            self.left_z()
-        elif event.key() == Qt.Key_A:
-            self.right_z()
+    #def KeyPressEvent(self, event):
+        #if event.key() == Qt.Key_W:
+            #self.plus_z()
+        #elif event.key() == Qt.Key_S:
+            #self.minus_z()
+        #elif event.key() == Qt.Key_A:
+            #self.left_z()
+        #elif event.key() == Qt.Key_A:
+            #self.right_z()
 
     def left_z(self):
         my_map.lon -= 1/my_map.lat
@@ -138,17 +147,28 @@ class MainWindow(QMainWindow):
         self.change_map()
 
     def new_search(self):
-        my_map.toponym = self.adress.text()
-        my_map.lon, my_map.lat = get_coords(my_map.toponym)
-        self.change_map()
+        if my_map.pt:
+            my_map.toponym = self.adress.text()
+            my_map.lon, my_map.lat = get_coords(my_map.toponym)
+            self.change_map()
+        else:
+            self.adress.setText('')
+            self.change_map()
 
     def change_map(self):
-        params = {
-            "ll": ','.join([str(my_map.lon), str(my_map.lat)]),
-            "z": str(my_map.z),
-            "l": my_map.type,
-            'pt': f"{my_map.lon},{my_map.lat},pm2dbm"
-        }
+        if my_map.pt:
+            params = {
+                "ll": ','.join([str(my_map.lon), str(my_map.lat)]),
+                "z": str(my_map.z),
+                "l": my_map.type,
+                'pt': f"{my_map.lon},{my_map.lat},pm2dbm"
+                }
+        else:
+            params = {
+                "ll": ','.join([str(my_map.lon), str(my_map.lat)]),
+                "z": str(my_map.z),
+                "l": my_map.type
+            }
 
         self.pixmap = QPixmap(get_map(params))
         self.image.setPixmap(self.pixmap)
