@@ -1,18 +1,15 @@
 import sys
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit
 from PyQt5 import QtGui
 from PyQt5.QtCore import QSize
 from PyQt5.QtCore import Qt
-
-
-
 from PyQt5.QtGui import QPixmap
 from PIL.ImageQt import ImageQt
 
 from api_utils import *
 from map_show import *
+
 
 class myMap:
     def __init__(self):
@@ -27,6 +24,7 @@ class myMap:
 
 
 my_map = myMap()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -80,6 +78,10 @@ class MainWindow(QMainWindow):
         self.delete = QPushButton("Сброс поискового результата", self)
         self.grid_layout.addWidget(self.delete, 1, 4, 1, 1)
         self.delete.clicked.connect(self.delete_search)
+
+        self.adr = QLabel()
+        self.grid_layout.addWidget(self.adr, 1, 5, 1, 1)
+        self.adr.setText(my_map.toponym)
         # поле
         self.adress = QLineEdit()
         self.adress.setFont(font)
@@ -95,7 +97,6 @@ class MainWindow(QMainWindow):
     def delete_search(self):
         my_map.pt = False
         self.new_search()
-
 
     def change(self):
         my_map.count += 1
@@ -153,6 +154,8 @@ class MainWindow(QMainWindow):
             self.change_map()
         else:
             self.adress.setText('')
+            my_map.toponym = self.adress.text()
+            self.adr.setText(my_map.toponym)
             self.change_map()
 
     def change_map(self):
