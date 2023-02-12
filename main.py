@@ -57,12 +57,19 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.minus, 1, 0, 1, 1)
         self.minus.clicked.connect(self.minus_z)
 
-        self.left = QPushButton("<-", self)
+        self.left = QPushButton("🠔", self)
         self.grid_layout.addWidget(self.left, 2, 0, 1, 1)
         self.left.clicked.connect(self.left_z)
-        self.right = QPushButton("->", self)
+        self.right = QPushButton("🠖", self)
         self.grid_layout.addWidget(self.right, 2, 14, 1, 1)
         self.right.clicked.connect(self.right_z)
+
+        self.left = QPushButton("🠕", self)
+        self.grid_layout.addWidget(self.left, 3, 0, 1, 1)
+        self.left.clicked.connect(self.up_z)
+        self.right = QPushButton("🠗", self)
+        self.grid_layout.addWidget(self.right, 3, 14, 1, 1)
+        self.right.clicked.connect(self.down_z)
 
 
         # поле
@@ -76,6 +83,14 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.btn2, 0, 14, 1, 2)  # Добавляем кнопку в сетку
         self.btn2.clicked.connect(self.new_search)
         self.new_search()
+
+    def up_z(self):
+        my_map.lat += 1 / my_map.lon
+        self.change_map()
+
+    def down_z(self):
+        my_map.lat -= 1 / my_map.lon
+        self.change_map()
 
     def plus_z(self):
         if my_map.z < 27:
