@@ -75,6 +75,11 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.chang, 1, 3, 1, 1)
         self.chang.clicked.connect(self.change)
 
+        self.pochta = QPushButton("Показать почтовый индекс", self)
+        self.grid_layout.addWidget(self.pochta, 1, 3, 1, 1)
+        self.pochta.clicked.connect(self.mail)
+        self.count_postal = 0
+
         self.delete = QPushButton("Сброс поискового результата", self)
         self.grid_layout.addWidget(self.delete, 1, 4, 1, 1)
         self.delete.clicked.connect(self.delete_search)
@@ -93,6 +98,18 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.btn2, 0, 14, 1, 2)  # Добавляем кнопку в сетку
         self.btn2.clicked.connect(self.new_search)
         self.new_search()
+
+    def mail(self):
+        self.count_postal += 1
+        p = geocode(self.adress.text())['metaDataProperty']['GeocoderMetaData']['Address']['postal_code']
+        text = self.adress.text()
+        if self.count_postal == 1:
+            self.adr.setText(f'{text} {p}')
+            self.pochta.setText("Убрать почтовый индекс")
+        elif self.count_postal == 2:
+            self.adr.setText(f'{text}')
+            self.pochta.setText("Показать почтовый индекс")
+            self.count_postal = 0
 
     def delete_search(self):
         my_map.pt = False
