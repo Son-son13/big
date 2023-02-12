@@ -22,6 +22,7 @@ class myMap:
         self.type = 'map'
         self.toponym = 'Москва, Пестеля, 8г'
         self.spn = get_ll_spn(self.toponym)[1]
+        self.count = 0
 
 
 my_map = myMap()
@@ -29,7 +30,7 @@ my_map = myMap()
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        self.setMinimumSize(QSize(600, 600))  # Устанавливаем размеры
+        self.setMinimumSize(QSize(550, 600))  # Устанавливаем размеры
         self.setWindowTitle("Большая задача")  # Устанавливаем заголовок окна
         self.central_widget = QWidget(self)  # Создаём центральный виджет
         self.setCentralWidget(self.central_widget)  # Устанавливаем центральный виджет
@@ -71,7 +72,9 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.right, 3, 14, 1, 1)
         self.right.clicked.connect(self.down_z)
 
-
+        self.left = QPushButton("Изменить вид карты", self)
+        self.grid_layout.addWidget(self.left, 10, 0, 1, 1)
+        self.left.clicked.connect(self.change)
         # поле
         self.adress = QLineEdit()
         self.adress.setFont(font)
@@ -83,6 +86,20 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(self.btn2, 0, 14, 1, 2)  # Добавляем кнопку в сетку
         self.btn2.clicked.connect(self.new_search)
         self.new_search()
+
+    def change(self):
+        my_map.count += 1
+        if my_map.count == 1:
+            my_map.type = 'map'
+            self.change_map()
+        elif my_map.count == 2:
+            my_map.type = 'sat'
+            self.change_map()
+        elif my_map.count == 3:
+            my_map.type = 'sat,skl'
+            self.change_map()
+            my_map.count = 0
+
 
     def up_z(self):
         my_map.lat += 1 / my_map.lon
